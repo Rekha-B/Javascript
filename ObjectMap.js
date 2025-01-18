@@ -16,5 +16,11 @@ function objectMap(obj, fn){
     return Object.fromEntries(Object.entries(obj).map(([key,value]) => [key,fn.call(obj,value)]));
 }
 
+function objectMap(obj, fn) {
+    for(let key in obj){
+       obj[key] = fn(obj[key]);
+    }
+    return obj;
+ }
 
 console.log(objectMap({ foo: 1, bar: 2 }, double));
