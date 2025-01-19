@@ -37,10 +37,31 @@ console.log(findIndex(arr, (num) => num > 10, 3));
 // // Start searching from index 3 (inclusive).
 // findLastIndex(arr, (num) => num < 1, 3); // => -1
 
+
+const arr = [5, 4, 3, 2, 1];
+
+// Start searching from index 2.
+findLastIndex(arr, (num) => num > 2, -3); // => 2
+
+findLastIndex(arr, (num) => num % 2 === 0, -3); // => 1
+
+// Start from the last index if fromIndex >= array.length.
+findLastIndex(arr, (num) => num > 0, 10); // => 4
+
+// Negative and out of bounds, start searching from the first item in the array.
+findLastIndex(arr, (num) => num > 2, -10); // => 0
+
+
 export default function findLastIndex(
     array,
     predicate,
     fromIndex = array.length - 1,
   ) {
-    throw 'Not implemented!';
+    const startIndex = fromIndex < 0 ? fromIndex + start : fromIndex;
+    for(let index = startIndex; index >=0 ; index--){
+      if(predicate(array[index], index, array)){
+        return index;
+      }
+    }
+    return -1;
   }
