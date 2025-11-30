@@ -1,31 +1,50 @@
-function debounce(fn, delay, options = {}) {
-  const { leading = false, trailing = true } = options;
+function debounce(fn, delay, options = { leading: false, trailing: true }){
+    let timeoutId = null;
+    let lastInvokeTime = 0;
 
-  let timerId = null;
-  let lastArgs = null;
-  let lastThis = null;
-  let leadingExecuted = false;
+    return function(...args){
+        const context = this;
+        const now = Date.now();
+        const timeSinceLastInvoke = now - lastInvokeTime;
+        const shouldCallLeading = options.leading && timeSinceLastInvoke >= delay;
 
-  return function (...args) {
-    lastArgs = args;
-    lastThis = this;
+        clearTimeout(timeoutId);
 
-    const shouldCallLeading = leading && !timerId;
+        if(shouldCallLeading){
+            fn.apply(context, args);
+            lastInvokeTime = now;
+        }
 
-    if (shouldCallLeading) {
-      fn.apply(lastThis, lastArgs);  // call immediately
-      leadingExecuted = true;
+        timeoutId = setTimeout(() => {
+            if(options.trailing && !shouldCallLeading){
+                fn.apply(context, args);
+                lastInvokeTime = Date.now();
+            }
+            timeoutId = null;
+        }, delay);
     }
-
-    clearTimeout(timerId);
-
-    timerId = setTimeout(() => {
-      if (trailing && (!leading || leadingExecuted)) {
-        fn.apply(lastThis, lastArgs);  // final call
-      }
-
-      timerId = null;
-      leadingExecuted = false;
-    }, delay);
-  };
 }
+const logMessage = debounce((message) => {
+    console.log(message);
+}, 3000, { leading: false, trailing: true });
+
+logMessage('First call');
+logMessage('Second call');
+logMessage('Third call');
+logMessage('Fourth call');
+logMessage('Fifth call');
+setTimeout(() => {
+    logMessage('Sixth call');
+}, 1000);
+setTimeout(() => {
+    logMessage('Seventh call');
+}, 2000);
+setTimeout(() => {
+    logMessage('Eighth call');
+}, 3000);
+setTimeout(() => {
+    logMessage('Ninth call');
+}, 4000);
+setTimeout(() => {
+    logMessage('Tenth call');
+}, 5000);
